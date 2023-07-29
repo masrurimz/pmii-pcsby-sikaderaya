@@ -4,14 +4,14 @@ import {
   getAll,
   getOne,
   update,
-} from "../services/comissariat.service";
+} from "../services/rayon.service";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { createPagination } from "../utils/pagination";
 
-export const comissariatRouter = router({
+export const rayonRouter = router({
   index: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/comissariats" } })
+    .meta({ openapi: { method: "GET", path: "/rayons" } })
     .input(
       z.object({ page: z.number().default(1), limit: z.number().default(10) })
     )
@@ -27,62 +27,62 @@ export const comissariatRouter = router({
     }),
 
   show: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/comissariats/{id}" } })
+    .meta({ openapi: { method: "GET", path: "/rayons/{id}" } })
     .input(z.object({ id: z.number() }))
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const comissariat = await getOne(ctx, id);
+      const rayon = await getOne(ctx, id);
       return {
-        data: comissariat,
+        data: rayon,
       };
     }),
 
   create: protectedProcedure
-    .meta({ openapi: { method: "POST", path: "/comissariats" } })
+    .meta({ openapi: { method: "POST", path: "/rayons" } })
     .input(
       z.object({
         name: z.string(),
-        address: z.string(),
         logo: z.string().optional(),
+        comissariatId: z.number(),
       })
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const comissariat = await create(ctx, input);
+      const rayon = await create(ctx, input);
       return {
-        data: comissariat,
+        data: rayon,
       };
     }),
 
   update: protectedProcedure
-    .meta({ openapi: { method: "PUT", path: "/comissariats/{id}" } })
+    .meta({ openapi: { method: "PUT", path: "/rayons/{id}" } })
     .input(
       z.object({
         id: z.number(),
         name: z.string(),
-        address: z.string(),
         logo: z.string().optional(),
+        comissariatId: z.number(),
       })
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const { id, ...data } = input;
-      const comissariat = await update(ctx, id, data);
+      const { id, ...rest } = input;
+      const rayon = await update(ctx, id, rest);
       return {
-        data: comissariat,
+        data: rayon,
       };
     }),
 
   delete: protectedProcedure
-    .meta({ openapi: { method: "DELETE", path: "/comissariats/{id}" } })
+    .meta({ openapi: { method: "DELETE", path: "/rayons/{id}" } })
     .input(z.object({ id: z.number() }))
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const comissariat = await destory(ctx, id);
+      const rayon = await destory(ctx, id);
       return {
-        data: comissariat,
+        data: rayon,
       };
     }),
 });

@@ -17,6 +17,7 @@ export const authRouter = router({
     .query(({ ctx, input }) => {
       return signIn(ctx, input.email, input.password);
     }),
+
   refreshToken: publicProcedure
     .meta({ openapi: { method: "POST", path: "/auth/refresh-token" } })
     .input(z.object({ refresh_token: z.string() }))

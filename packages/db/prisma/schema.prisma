@@ -50,7 +50,6 @@ model Comissariat {
 model Rayon {
   id            Int         @id @default(autoincrement())
   name          String
-  address       String?
   logo          String?
   comissariatId Int         @map("comissariat_id")
   comissariat   Comissariat @relation(fields: [comissariatId], references: [id])

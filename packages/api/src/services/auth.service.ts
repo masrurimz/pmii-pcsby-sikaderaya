@@ -1,7 +1,7 @@
 import { Context } from "../context";
 import bcrypt from "bcrypt";
 import { signJwt, verifyJwt } from "../utils/jwt";
-import customConfig from "../config/default";
+import { config } from "../config/config";
 
 export const signIn = async (ctx: Context, email: string, password: string) => {
   const user = await ctx.prisma.user.findFirstOrThrow({
@@ -14,7 +14,7 @@ export const signIn = async (ctx: Context, email: string, password: string) => {
 };
 
 export const refreshToken = async (ctx: Context, token: string) => {
-  const jwt = verifyJwt<{ sub: number }>(token, "refreshTokenKey");
+  const jwt = verifyJwt<{ sub: number }>(token, "refresh");
   if (!jwt) {
     throw new Error("Invalid refresh token");
   }
@@ -25,11 +25,11 @@ export const refreshToken = async (ctx: Context, token: string) => {
 };
 
 const generateToken = (userId: number) => {
-  const access_token = signJwt({ sub: userId }, "accessTokenKey", {
-    expiresIn: customConfig.accessTokenExpiresIn + "m",
+  const access_token = signJwt({ sub: userId }, "access", {
+    expiresIn: config.JWT.accessExpiresIn + "m",
   });
-  const refresh_token = signJwt({ sub: userId }, "refreshTokenKey", {
-    expiresIn: customConfig.refreshTokenExpiresIn + "m",
+  const refresh_token = signJwt({ sub: userId }, "refresh", {
+    expiresIn: config.JWT.accessExpiresIn + "m",
   });
 
   return {

@@ -1,24 +1,34 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import customConfig from "../config/default";
+import { config } from "../config/config";
 
 export const signJwt = (
   payload: Object,
-  key: "accessTokenKey" | "refreshTokenKey",
+  type: "access" | "refresh",
   options: SignOptions = {}
 ) => {
-  const privateKey = customConfig[key];
+  var privateKey: jwt.Secret;
+  if (type === "access") {
+    privateKey = config.JWT.accessSecret;
+  } else {
+    privateKey = config.JWT.refreshSecret;
+  }
   return jwt.sign(payload, privateKey, {
     ...(options && options),
-    algorithm: 'HS256',
+    algorithm: "HS256",
   });
 };
 
 export const verifyJwt = <T>(
   token: string,
-  key: "accessTokenKey" | "refreshTokenKey"
+  type: "access" | "refresh"
 ): T | null => {
   try {
-    const privateKey = customConfig[key];
+    var privateKey: jwt.Secret;
+    if (type === "access") {
+      privateKey = config.JWT.accessSecret;
+    } else {
+      privateKey = config.JWT.refreshSecret;
+    }
     return jwt.verify(token, privateKey) as T;
   } catch (error) {
     console.log(error);
