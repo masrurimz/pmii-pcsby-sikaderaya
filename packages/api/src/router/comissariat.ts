@@ -7,22 +7,20 @@ import {
 } from "../services/comissariat.service";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import { createPagination } from "../utils/pagination";
 
 export const comissariatRouter = router({
   index: publicProcedure
     .meta({ openapi: { method: "GET", path: "/comissariats" } })
     .input(
-      z.object({ page: z.number().default(1), limit: z.number().default(10) })
+      z.object({ limit: z.number().default(10), cursor: z.number().optional() })
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const { page, limit } = input;
-      const { data, total } = await getAll(ctx, page, limit);
-      const pagination = createPagination(page, limit, total);
+      const { cursor, limit } = input;
+      const { items, nextCursor } = await getAll(ctx, limit, cursor);
       return {
-        data,
-        pagination,
+        items,
+        nextCursor,
       };
     }),
 

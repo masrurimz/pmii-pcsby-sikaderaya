@@ -5,15 +5,21 @@ const EXPIRES_IN = 60 * 5;
 
 export const getAll = async (
   ctx: Context,
-  page: number,
-  limit: number
+  limit: number,
+  cursor: number | undefined
 ): Promise<any> => {
-  let comissariats = await ctx.prisma.comissariat.findMany({
-    skip: (page - 1) * limit,
-    take: limit,
+  let items = await ctx.prisma.comissariat.findMany({
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
+    orderBy: { id: "asc" },
   });
-  comissariats = await Promise.all(
-    comissariats.map(async (comissariat) => {
+  let nextCursor: typeof cursor | undefined = undefined;
+  if (items.length > limit) {
+    const nextItem = items.pop();
+    nextCursor = nextItem?.id;
+  }
+  items = await Promise.all(
+    items.map(async (comissariat) => {
       if (comissariat.logo) {
         comissariat.logo = await ctx.storage.createSignedUrl(
           comissariat.logo,
@@ -23,10 +29,9 @@ export const getAll = async (
       return comissariat;
     })
   );
-  const total = await ctx.prisma.comissariat.count();
   return {
-    data: comissariats,
-    total,
+    items,
+    nextCursor,
   };
 };
 

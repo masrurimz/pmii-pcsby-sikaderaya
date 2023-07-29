@@ -5,23 +5,28 @@ const EXPIRES_IN = 60 * 5;
 
 export const getAll = async (
   ctx: Context,
-  page: number,
-  limit: number
+  limit: number,
+  cursor: number | undefined
 ): Promise<any> => {
-  let rayons = await ctx.prisma.rayon.findMany({
-    skip: (page - 1) * limit,
-    take: limit,
+  let items = await ctx.prisma.rayon.findMany({
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
+    orderBy: { id: "asc" },
   });
-  rayons = await Promise.all(rayons.map(async (rayon) => {
-    if (rayon.logo) {
-      rayon.logo = await ctx.storage.createSignedUrl(rayon.logo, EXPIRES_IN);
+  let nextCursor: typeof cursor | undefined = undefined;
+  if (items.length > limit) {
+    const nextItem = items.pop();
+    nextCursor = nextItem?.id;
+  }
+  items = await Promise.all(items.map(async (item) => {
+    if (item.logo) {
+      item.logo = await ctx.storage.createSignedUrl(item.logo, EXPIRES_IN);
     }
-    return rayon;
+    return item;
   }));
-  const total = await ctx.prisma.rayon.count();
   return {
-    data: rayons,
-    total,
+    items,
+    nextCursor,
   };
 };
 
