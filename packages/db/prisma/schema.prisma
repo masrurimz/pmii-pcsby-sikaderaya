@@ -142,7 +142,7 @@ model RequestUpdate {
   createdBy    Int                   @map("created_by")
   approvedBy   Int?                  @map("approved_by")
   approvedAt   DateTime?             @map("approved_at")
-  reatedAt     DateTime              @default(now()) @map("created_at")
+  createdAt    DateTime              @default(now()) @map("created_at")
   updatedAt    DateTime              @updatedAt @map("updated_at")
   createdUser  User                  @relation("request_update_user", fields: [createdBy], references: [id])
   approvedUser User?                 @relation("approved_update_user", fields: [approvedBy], references: [id])
@@ -169,6 +169,8 @@ model RequestUpdateMember {
   trainings      Json
   schools        Json?
   socialMedias   Json?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   @@map("request_update_members")
 }
