@@ -27,8 +27,8 @@ export const rayonRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const rayon = await getOne(ctx, id);
-      return rayon;
+      const item = await getOne(ctx, id);
+      return item;
     }),
 
   create: protectedProcedure
@@ -42,8 +42,8 @@ export const rayonRouter = router({
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const rayon = await create(ctx, input);
-      return rayon;
+      const item = await create(ctx, input);
+      return item;
     }),
 
   update: protectedProcedure
@@ -59,8 +59,8 @@ export const rayonRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id, ...rest } = input;
-      const rayon = await update(ctx, id, rest);
-      return rayon;
+      const item = await update(ctx, id, rest);
+      return item;
     }),
 
   delete: protectedProcedure
@@ -69,7 +69,7 @@ export const rayonRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const rayon = await destroy(ctx, id);
-      return rayon;
+      const item = await destroy(ctx, id);
+      return item;
     }),
 });

@@ -1,4 +1,3 @@
-import { Comissariat } from "@my/db/index";
 import { Context } from "../context";
 
 const EXPIRES_IN = 60 * 5;
@@ -7,7 +6,7 @@ export const getAll = async (
   ctx: Context,
   limit: number,
   cursor: number | undefined
-): Promise<any> => {
+) => {
   let items = await ctx.prisma.comissariat.findMany({
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
@@ -35,10 +34,7 @@ export const getAll = async (
   };
 };
 
-export const getOne = async (
-  ctx: Context,
-  id: number
-): Promise<Comissariat> => {
+export const getOne = async (ctx: Context, id: number) => {
   const comissariat = await ctx.prisma.comissariat.findFirstOrThrow({
     where: { id },
     include: { rayons: true },
@@ -52,18 +48,14 @@ export const getOne = async (
   return comissariat;
 };
 
-export const create = async (ctx: Context, data: any): Promise<Comissariat> => {
+export const create = async (ctx: Context, data: any) => {
   const comissariat = await ctx.prisma.comissariat.create({
     data,
   });
   return comissariat;
 };
 
-export const update = async (
-  ctx: Context,
-  id: number,
-  data: any
-): Promise<Comissariat> => {
+export const update = async (ctx: Context, id: number, data: any) => {
   const before = await ctx.prisma.comissariat.findFirstOrThrow({
     where: { id },
     select: { logo: true },
@@ -78,10 +70,7 @@ export const update = async (
   return comissariat;
 };
 
-export const destroy = async (
-  ctx: Context,
-  id: number
-): Promise<Comissariat> => {
+export const destroy = async (ctx: Context, id: number) => {
   const comissariat = await ctx.prisma.comissariat.delete({
     where: { id },
   });

@@ -1,4 +1,3 @@
-import { Rayon } from "@my/db/index";
 import { Context } from "../context";
 
 const EXPIRES_IN = 60 * 5;
@@ -7,7 +6,7 @@ export const getAll = async (
   ctx: Context,
   limit: number,
   cursor: number | undefined
-): Promise<any> => {
+) => {
   let items = await ctx.prisma.rayon.findMany({
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
@@ -18,19 +17,21 @@ export const getAll = async (
     const nextItem = items.pop();
     nextCursor = nextItem?.id;
   }
-  items = await Promise.all(items.map(async (item) => {
-    if (item.logo) {
-      item.logo = await ctx.storage.createSignedUrl(item.logo, EXPIRES_IN);
-    }
-    return item;
-  }));
+  items = await Promise.all(
+    items.map(async (item) => {
+      if (item.logo) {
+        item.logo = await ctx.storage.createSignedUrl(item.logo, EXPIRES_IN);
+      }
+      return item;
+    })
+  );
   return {
     items,
     nextCursor,
   };
 };
 
-export const getOne = async (ctx: Context, id: number): Promise<Rayon> => {
+export const getOne = async (ctx: Context, id: number) => {
   const rayon = await ctx.prisma.rayon.findFirstOrThrow({
     where: { id },
   });
@@ -40,18 +41,14 @@ export const getOne = async (ctx: Context, id: number): Promise<Rayon> => {
   return rayon;
 };
 
-export const create = async (ctx: Context, data: any): Promise<Rayon> => {
+export const create = async (ctx: Context, data: any) => {
   const rayon = await ctx.prisma.rayon.create({
     data,
   });
   return rayon;
 };
 
-export const update = async (
-  ctx: Context,
-  id: number,
-  data: any
-): Promise<Rayon> => {
+export const update = async (ctx: Context, id: number, data: any) => {
   const before = await ctx.prisma.rayon.findFirstOrThrow({
     where: { id },
     select: { logo: true },
@@ -66,7 +63,7 @@ export const update = async (
   return rayon;
 };
 
-export const destroy = async (ctx: Context, id: number): Promise<Rayon> => {
+export const destroy = async (ctx: Context, id: number) => {
   const rayon = await ctx.prisma.rayon.delete({
     where: { id },
   });

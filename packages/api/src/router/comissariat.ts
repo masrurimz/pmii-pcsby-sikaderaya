@@ -30,8 +30,8 @@ export const comissariatRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const comissariat = await getOne(ctx, id);
-      return comissariat;
+      const item = await getOne(ctx, id);
+      return item;
     }),
 
   create: protectedProcedure
@@ -45,8 +45,8 @@ export const comissariatRouter = router({
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const comissariat = await create(ctx, input);
-      return comissariat;
+      const item = await create(ctx, input);
+      return item;
     }),
 
   update: protectedProcedure
@@ -62,8 +62,8 @@ export const comissariatRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      const comissariat = await update(ctx, id, data);
-      return comissariat;
+      const item = await update(ctx, id, data);
+      return item;
     }),
 
   delete: protectedProcedure
@@ -72,7 +72,7 @@ export const comissariatRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const comissariat = await destroy(ctx, id);
-      return comissariat;
+      const item = await destroy(ctx, id);
+      return item;
     }),
 });

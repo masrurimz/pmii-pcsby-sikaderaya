@@ -13,5 +13,4 @@ export const appRouter = router({
   storage: storageRouter,
 });
 
-// export type definition of API
 export type AppRouter = typeof appRouter;

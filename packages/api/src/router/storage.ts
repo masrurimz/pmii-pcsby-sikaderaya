@@ -9,8 +9,6 @@ export const storageRouter = router({
     .query(async ({ ctx, input }) => {
       const { filename } = input;
       const data = await ctx.storage.createSignedUploadUrl(filename);
-      return {
-        data,
-      };
+      return { data }
     }),
 })
