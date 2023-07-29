@@ -58,4 +58,14 @@ export class SupabaseStorage implements StorageInterface {
 
     return data.signedUrl;
   }
+
+  async createSignedUploadUrl(filename: string): Promise<any> {
+    const { data, error } = await this.supabaseClient.storage
+      .from(this.bucket)
+      .createSignedUploadUrl(filename);
+    if (error) {
+      throw error;
+    }
+    return data;
+  }
 }
