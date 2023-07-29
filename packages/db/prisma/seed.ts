@@ -1,10 +1,10 @@
 import { PrismaClient, Role } from "@prisma/client";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await bcrypt.hash("admin123", 10);
+  const hashedPassword = await argon2.hash("admin123");
   const superadmin = await prisma.user.upsert({
     where: { email: "admin@admin.com" },
     update: {},

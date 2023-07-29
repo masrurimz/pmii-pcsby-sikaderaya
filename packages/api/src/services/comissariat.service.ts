@@ -8,7 +8,7 @@ export const getAll = async (
   page: number,
   limit: number
 ): Promise<any> => {
-  var comissariats = await ctx.prisma.comissariat.findMany({
+  let comissariats = await ctx.prisma.comissariat.findMany({
     skip: (page - 1) * limit,
     take: limit,
   });
@@ -73,7 +73,7 @@ export const update = async (
   return comissariat;
 };
 
-export const destory = async (
+export const destroy = async (
   ctx: Context,
   id: number
 ): Promise<Comissariat> => {

@@ -63,9 +63,11 @@ export class SupabaseStorage implements StorageInterface {
     const { data, error } = await this.supabaseClient.storage
       .from(this.bucket)
       .createSignedUploadUrl(filename);
+
     if (error) {
       throw error;
     }
+
     return data;
   }
 }

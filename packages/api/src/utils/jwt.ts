@@ -6,7 +6,7 @@ export const signJwt = (
   type: "access" | "refresh",
   options: SignOptions = {}
 ) => {
-  var privateKey: jwt.Secret;
+  let privateKey: jwt.Secret;
   if (type === "access") {
     privateKey = config.JWT.accessSecret;
   } else {
@@ -23,7 +23,7 @@ export const verifyJwt = <T>(
   type: "access" | "refresh"
 ): T | null => {
   try {
-    var privateKey: jwt.Secret;
+    let privateKey: jwt.Secret;
     if (type === "access") {
       privateKey = config.JWT.accessSecret;
     } else {
@@ -31,7 +31,6 @@ export const verifyJwt = <T>(
     }
     return jwt.verify(token, privateKey) as T;
   } catch (error) {
-    console.log(error);
     return null;
   }
 };

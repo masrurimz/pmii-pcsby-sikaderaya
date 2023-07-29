@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
-    "bcrypt": "^5.1.0"
+    "argon2": "^0.30.3"
   },
   "devDependencies": {
     "@types/node": "^20.4.5",

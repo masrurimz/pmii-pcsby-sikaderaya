@@ -1,6 +1,6 @@
 import {
   create,
-  destory,
+  destroy,
   getAll,
   getOne,
   update,
@@ -17,7 +17,7 @@ export const rayonRouter = router({
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      var { page, limit } = input;
+      const { page, limit } = input;
       const { data, total } = await getAll(ctx, page, limit);
       const pagination = createPagination(page, limit, total);
       return {
@@ -26,16 +26,14 @@ export const rayonRouter = router({
       };
     }),
 
-  show: publicProcedure
+  getById: publicProcedure
     .meta({ openapi: { method: "GET", path: "/rayons/{id}" } })
     .input(z.object({ id: z.number() }))
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
       const rayon = await getOne(ctx, id);
-      return {
-        data: rayon,
-      };
+      return rayon;
     }),
 
   create: protectedProcedure
@@ -50,9 +48,7 @@ export const rayonRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const rayon = await create(ctx, input);
-      return {
-        data: rayon,
-      };
+      return rayon;
     }),
 
   update: protectedProcedure
@@ -69,9 +65,7 @@ export const rayonRouter = router({
     .query(async ({ ctx, input }) => {
       const { id, ...rest } = input;
       const rayon = await update(ctx, id, rest);
-      return {
-        data: rayon,
-      };
+      return rayon;
     }),
 
   delete: protectedProcedure
@@ -80,9 +74,7 @@ export const rayonRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const rayon = await destory(ctx, id);
-      return {
-        data: rayon,
-      };
+      const rayon = await destroy(ctx, id);
+      return rayon;
     }),
 });

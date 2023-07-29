@@ -1,6 +1,6 @@
 import {
   create,
-  destory,
+  destroy,
   getAll,
   getOne,
   update,
@@ -17,7 +17,7 @@ export const comissariatRouter = router({
     )
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      var { page, limit } = input;
+      const { page, limit } = input;
       const { data, total } = await getAll(ctx, page, limit);
       const pagination = createPagination(page, limit, total);
       return {
@@ -26,16 +26,14 @@ export const comissariatRouter = router({
       };
     }),
 
-  show: publicProcedure
+  getById: publicProcedure
     .meta({ openapi: { method: "GET", path: "/comissariats/{id}" } })
     .input(z.object({ id: z.number() }))
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
       const comissariat = await getOne(ctx, id);
-      return {
-        data: comissariat,
-      };
+      return comissariat;
     }),
 
   create: protectedProcedure
@@ -50,9 +48,7 @@ export const comissariatRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const comissariat = await create(ctx, input);
-      return {
-        data: comissariat,
-      };
+      return comissariat;
     }),
 
   update: protectedProcedure
@@ -69,9 +65,7 @@ export const comissariatRouter = router({
     .query(async ({ ctx, input }) => {
       const { id, ...data } = input;
       const comissariat = await update(ctx, id, data);
-      return {
-        data: comissariat,
-      };
+      return comissariat;
     }),
 
   delete: protectedProcedure
@@ -80,9 +74,7 @@ export const comissariatRouter = router({
     .output(z.any())
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const comissariat = await destory(ctx, id);
-      return {
-        data: comissariat,
-      };
+      const comissariat = await destroy(ctx, id);
+      return comissariat;
     }),
 });

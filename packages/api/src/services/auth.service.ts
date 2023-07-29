@@ -1,5 +1,5 @@
 import { Context } from "../context";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { signJwt, verifyJwt } from "../utils/jwt";
 import { config } from "../config/config";
 
@@ -7,7 +7,9 @@ export const signIn = async (ctx: Context, email: string, password: string) => {
   const user = await ctx.prisma.user.findFirstOrThrow({
     where: { email: email },
   });
-  const isValidPassword = bcrypt.compare(password, user.password);
+  if (!user.password) throw new Error("Invalid password");
+
+  const isValidPassword = await argon2.verify(user.password, password)
   if (!isValidPassword) throw new Error("Invalid password");
 
   return generateToken(user.id);

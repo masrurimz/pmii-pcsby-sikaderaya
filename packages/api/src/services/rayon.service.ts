@@ -8,7 +8,7 @@ export const getAll = async (
   page: number,
   limit: number
 ): Promise<any> => {
-  var rayons = await ctx.prisma.rayon.findMany({
+  let rayons = await ctx.prisma.rayon.findMany({
     skip: (page - 1) * limit,
     take: limit,
   });
@@ -61,7 +61,7 @@ export const update = async (
   return rayon;
 };
 
-export const destory = async (ctx: Context, id: number): Promise<Rayon> => {
+export const destroy = async (ctx: Context, id: number): Promise<Rayon> => {
   const rayon = await ctx.prisma.rayon.delete({
     where: { id },
   });
