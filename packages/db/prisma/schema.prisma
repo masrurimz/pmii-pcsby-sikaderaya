@@ -10,19 +10,255 @@ datasource db {
 }
 
 enum Role {
-  SUPERADMIN
-  ADMIN_PC
-  ADMIN_KOMS
-  ADMIN_RAYON
-  MEMBER
+  SUPERADMIN        @map("superadmin")
+  ADMIN_PC          @map("admin_pc")
+  ADMIN_COMISSARIAT @map("admin_comissariats")
+  ADMIN_RAYON       @map("admin_rayon")
+  MEMBER            @map("member")
+
+  @@map("role")
 }
 
 model User {
+  id              Int             @id @default(autoincrement())
+  name            String
+  email           String?         @unique
+  password        String?
+  role            Role
+  roleDetail      Int?            @map("role_detail")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  Member          Member?
+  requestUpdates  RequestUpdate[] @relation("request_update_user")
+  approvedUpdates RequestUpdate[] @relation("approved_update_user")
+
+  @@map("users")
+}
+
+model Comissariat {
   id        Int      @id @default(autoincrement())
   name      String
-  email     String   @unique
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  address   String?
+  logo      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  rayons    Rayon[]
+
+  @@map("comissariats")
+}
+
+model Rayon {
+  id            Int         @id @default(autoincrement())
+  name          String
+  address       String?
+  logo          String?
+  comissariatId Int         @map("comissariat_id")
+  comissariat   Comissariat @relation(fields: [comissariatId], references: [id])
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  members       Member[]
+
+  @@map("rayons")
+}
+
+model University {
+  id        Int       @id @default(autoincrement())
+  name      String
+  address   String?
+  logo      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  faculties Faculty[]
+
+  @@map("universities")
+}
+
+model Faculty {
+  id           Int        @id @default(autoincrement())
+  name         String
+  universityId Int        @map("university_id")
+  university   University @relation(fields: [universityId], references: [id])
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  majors       Major[]
+
+  @@map("faculties")
+}
+
+model Major {
+  id        Int      @id @default(autoincrement())
+  name      String
+  facultyId Int      @map("faculty_id")
+  faculty   Faculty  @relation(fields: [facultyId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  members   Member[]
+
+  @@map("majors")
+}
+
+enum Gender {
+  MALE   @map("male")
+  FEMALE @map("female")
+
+  @@map("gender")
+}
+
+model Member {
+  id             Int                   @id @default(autoincrement())
+  userId         Int                   @unique @map("user_id")
+  user           User                  @relation(fields: [userId], references: [id])
+  gender         Gender
+  phoneNumber    String?               @map("phone_number")
+  identityNumber String                @map("identity_number")
+  studentNumber  String?               @map("student_number")
+  majorId        Int                   @map("major_id")
+  entryYear      Int                   @map("entry_year")
+  photo          String?
+  major          Major                 @relation(fields: [majorId], references: [id])
+  rayonId        Int                   @map("rayon_id")
+  rayon          Rayon                 @relation(fields: [rayonId], references: [id])
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+  school         MemberSchool[]
+  trainings      MemberTraining[]
+  socialMedias   MemberSocialMedia[]
+  requestUpdates RequestUpdateMember[]
+
+  @@map("members")
+}
+
+enum RequestUpdateStatus {
+  PENDING @map("pending")
+  APPROVE @map("approve")
+  REJECT  @map("reject")
+  CANCEL  @map("cancel")
+
+  @@map("request_update_status")
+}
+
+model RequestUpdate {
+  id           Int                   @id @default(autoincrement())
+  status       RequestUpdateStatus   @default(PENDING)
+  createdBy    Int                   @map("created_by")
+  approvedBy   Int?                  @map("approved_by")
+  approvedAt   DateTime?             @map("approved_at")
+  reatedAt     DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
+  createdUser  User                  @relation("request_update_user", fields: [createdBy], references: [id])
+  approvedUser User?                 @relation("approved_update_user", fields: [approvedBy], references: [id])
+  members      RequestUpdateMember[]
+
+  @@map("request_updates")
+}
+
+model RequestUpdateMember {
+  id             Int           @id @default(autoincrement())
+  requestId      Int           @map("request_id")
+  request        RequestUpdate @relation(fields: [requestId], references: [id])
+  memberId       Int?          @map("member_id")
+  member         Member?       @relation(fields: [memberId], references: [id])
+  name           String
+  email          String
+  gender         Gender
+  phoneNumber    String?       @map("phone_number")
+  identityNumber String        @map("identity_number")
+  studentNumber  String?       @map("student_number")
+  majorId        Int           @map("major_id")
+  entryYear      Int           @map("entry_year")
+  photo          String?
+  trainings      Json
+  schools        Json?
+  socialMedias   Json?
+
+  @@map("request_update_members")
+}
+
+enum TrainingType {
+  MAPABA @map("mapaba")
+  PKD    @map("pkd")
+  PKL    @map("pkl")
+  SIG    @map("sig")
+  SKK    @map("skk")
+  SKKN   @map("skkn")
+
+  @@map("training_type")
+}
+
+enum OrganizerType {
+  PC          @map("pc")
+  COMISSARIAT @map("comissariat")
+  RAYON       @map("rayon")
+  OTHERS      @map("others")
+
+  @@map("organizer_type")
+}
+
+model Training {
+  id             Int              @id @default(autoincrement())
+  name           String
+  type           TrainingType
+  year           Int
+  organizer_id   Int?             @map("organizer_id")
+  organizer_type OrganizerType    @map("organizer_type")
+  organizer_name String?          @map("organizer_name")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  members        MemberTraining[]
+
+  @@map("trainings")
+}
+
+model MemberTraining {
+  id         Int      @id @default(autoincrement())
+  memberId   Int      @map("member_id")
+  member     Member   @relation(fields: [memberId], references: [id])
+  trainingId Int      @map("training_id")
+  training   Training @relation(fields: [trainingId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("member_trainings")
+}
+
+enum SchoolType {
+  SD     @map("sd")
+  SMP    @map("smp")
+  SMA    @map("sma")
+  PONPES @map("ponpes")
+
+  @@map("school_type")
+}
+
+model MemberSchool {
+  id         Int        @id @default(autoincrement())
+  memberId   Int        @map("member_id")
+  member     Member     @relation(fields: [memberId], references: [id])
+  schoolName String     @map("school_name")
+  schoolType SchoolType @map("school_type")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  @@map("member_schools")
+}
+
+enum SocialMediaType {
+  INSTAGRAM @map("instagram")
+  TWITTER   @map("twitter")
+  LINE      @map("line")
+  LinkedIn  @map("linkedin")
+
+  @@map("social_media_type")
+}
+
+model MemberSocialMedia {
+  id        Int             @id @default(autoincrement())
+  memberId  Int             @map("member_id")
+  member    Member          @relation(fields: [memberId], references: [id])
+  username  String
+  type      SocialMediaType @map("type")
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@map("member_social_medias")
 }
