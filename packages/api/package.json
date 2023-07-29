@@ -12,11 +12,14 @@
     "@supabase/supabase-js": "^2.8.0",
     "@trpc/client": "10.9.0",
     "@trpc/server": "10.9.0",
+    "bcrypt": "^5.1.0",
+    "jsonwebtoken": "^9.0.1",
     "superjson": "^1.9.1",
     "trpc-openapi": "^1.2.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
     "eslint": "^8.28.0",
     "typescript": "4.9.4"
   }

@@ -9,30 +9,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// photo model
-model Entry {
-  id       String   @id @default(cuid())
-  entryDay DateTime // the day that the entry is assigned to
-
-  urlFrontPhotoThumbnail String
-  urlFrontPhotoHD        String
-
-  urlBackPhotoThumbnail String
-  urlBackPhotoHD        String
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  SUPERADMIN
+  ADMIN_PC
+  ADMIN_KOMS
+  ADMIN_RAYON
+  MEMBER
 }
 
-// user model
 model User {
-  id        String   @id @default(cuid())
-  name      String?
+  id        Int      @id @default(autoincrement())
+  name      String
   email     String   @unique
+  password  String
+  role      Role
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  entries   Entry[]
 }

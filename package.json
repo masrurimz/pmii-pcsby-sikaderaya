@@ -22,7 +22,8 @@
     "build:ui": "cd packages/ui && yarn build",
     "build-desktop": "turbo run build:tauri --filter nextjs",
     "studio": " cd packages/db && yarn prisma:studio",
-    "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader"
+    "upgrade:tamagui": "manypkg upgrade tamagui && manypkg upgrade @tamagui && manypkg upgrade tamagui-loader",
+    "db:seed": "cd packages/db && yarn seed"
   },
   "resolutions": {
     "esbuild": "0.15.6",

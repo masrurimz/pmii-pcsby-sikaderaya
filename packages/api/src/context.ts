@@ -1,9 +1,6 @@
-import { prisma } from "@my/db";
+import { prisma, User } from "@my/db";
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-//import { getAuth, clerkClient } from "@clerk/nextjs/server";
-
-import type { User } from "@supabase/supabase-js";
 
 // Create a single supabase client for interacting with your user/db
 
@@ -26,7 +23,7 @@ export const createContextInner = async ({ user }: IUserProps) => {
   };
 };
 
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { verifyJwt } from "./utils/jwt";
 
 /**
  * This is the actual context you'll use in your router
@@ -34,23 +31,20 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
  **/
 export const createContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
-  // Create authenticated Supabase Client.
-  const supabaseServerClient = createServerSupabaseClient({ req, res });
-
-  async function getUser() {
-    // get userId from request
-    const {
-      data: { user },
-    } = await supabaseServerClient.auth.getUser();
-
-    //clerk code:
-    //const { userId } = getAuth(opts.req);
-    //get full user object
-    //const user = userId ? await clerkClient.users.getUser(userId) : null;
-    return user;
+  async function getUserFromHeader() {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token) return null;
+    const jwt = verifyJwt<{ sub: number }>(token, 'accessTokenKey')
+    if (jwt) {
+      const user = await prisma.user.findFirstOrThrow({
+        where: { id: jwt.sub },
+      });
+      return user;
+    }
+    return null;
   }
 
-  const user = await getUser();
+  const user = await getUserFromHeader();
 
   return await createContextInner({ user });
 };
