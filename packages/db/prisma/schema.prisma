@@ -168,7 +168,7 @@ model RequestUpdateMember {
   photo          String?
   trainings      Json
   schools        Json?
-  socialMedias   Json?
+  socialMedias   Json?         @map("social_medias")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
