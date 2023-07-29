@@ -59,7 +59,7 @@ export const update = async (
   id: number,
   data: any
 ): Promise<Comissariat> => {
-  const comissariatBefore = await ctx.prisma.comissariat.findFirstOrThrow({
+  const before = await ctx.prisma.comissariat.findFirstOrThrow({
     where: { id },
     select: { logo: true },
   });
@@ -67,8 +67,8 @@ export const update = async (
     where: { id },
     data,
   });
-  if (comissariatBefore.logo && data.logo) {
-    await ctx.storage.deleteFile(comissariatBefore.logo);
+  if (before.logo && data.logo && before.logo !== data.logo) {
+    await ctx.storage.deleteFile(before.logo);
   }
   return comissariat;
 };

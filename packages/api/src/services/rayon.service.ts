@@ -47,7 +47,7 @@ export const update = async (
   id: number,
   data: any
 ): Promise<Rayon> => {
-  const rayonBefore = await ctx.prisma.rayon.findFirstOrThrow({
+  const before = await ctx.prisma.rayon.findFirstOrThrow({
     where: { id },
     select: { logo: true },
   });
@@ -55,8 +55,8 @@ export const update = async (
     where: { id },
     data,
   });
-  if (rayonBefore.logo && rayon.logo) {
-    await ctx.storage.deleteFile(rayonBefore.logo);
+  if (before.logo && rayon.logo && before.logo !== rayon.logo) {
+    await ctx.storage.deleteFile(before.logo);
   }
   return rayon;
 };
