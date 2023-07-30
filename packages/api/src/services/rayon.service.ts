@@ -1,12 +1,9 @@
 import { Context } from "../context";
+import { PaginationQueryInput } from "../schema/base.schema";
+import { CreateRayonInput, UpdateRayonInput } from "../schema/rayon.schema";
 
-const EXPIRES_IN = 60 * 5;
-
-export const getAll = async (
-  ctx: Context,
-  limit: number,
-  cursor: number | undefined
-) => {
+export const getAll = async (ctx: Context, filter: PaginationQueryInput) => {
+  const { limit, cursor } = filter;
   let items = await ctx.prisma.rayon.findMany({
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
@@ -17,45 +14,44 @@ export const getAll = async (
     const nextItem = items.pop();
     nextCursor = nextItem?.id;
   }
-  items = await Promise.all(
-    items.map(async (item) => {
-      if (item.logo) {
-        item.logo = await ctx.storage.createSignedUrl(item.logo, EXPIRES_IN);
-      }
-      return item;
-    })
-  );
+  items = items.map((item) => {
+    if (item.logo) {
+      item.logo = ctx.storage.getPublicUrl(item.logo);
+    }
+    return item;
+  });
   return {
     items,
     nextCursor,
   };
 };
 
-export const getOne = async (ctx: Context, id: number) => {
+export const getById = async (ctx: Context, id: number) => {
   const rayon = await ctx.prisma.rayon.findFirstOrThrow({
     where: { id },
   });
   if (rayon.logo) {
-    rayon.logo = await ctx.storage.createSignedUrl(rayon.logo, EXPIRES_IN);
+    rayon.logo = ctx.storage.getPublicUrl(rayon.logo);
   }
   return rayon;
 };
 
-export const create = async (ctx: Context, data: any) => {
+export const create = async (ctx: Context, data: CreateRayonInput) => {
   const rayon = await ctx.prisma.rayon.create({
     data,
   });
   return rayon;
 };
 
-export const update = async (ctx: Context, id: number, data: any) => {
+export const update = async (ctx: Context, data: UpdateRayonInput) => {
+  const { id, ...payload } = data;
   const before = await ctx.prisma.rayon.findFirstOrThrow({
     where: { id },
     select: { logo: true },
   });
   const rayon = await ctx.prisma.rayon.update({
     where: { id },
-    data,
+    data: payload,
   });
   if (before.logo && rayon.logo && before.logo !== rayon.logo) {
     await ctx.storage.deleteFile(before.logo);

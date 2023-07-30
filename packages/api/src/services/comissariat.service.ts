@@ -1,12 +1,12 @@
 import { Context } from "../context";
+import { PaginationQueryInput } from "../schema/base.schema";
+import {
+  CreateComissariatInput,
+  UpdateComissariatInput,
+} from "../schema/comissariat.schema";
 
-const EXPIRES_IN = 60 * 5;
-
-export const getAll = async (
-  ctx: Context,
-  limit: number,
-  cursor: number | undefined
-) => {
+export const getAll = async (ctx: Context, filter: PaginationQueryInput) => {
+  const { limit, cursor } = filter;
   let items = await ctx.prisma.comissariat.findMany({
     take: limit + 1,
     cursor: cursor ? { id: cursor } : undefined,
@@ -17,52 +17,45 @@ export const getAll = async (
     const nextItem = items.pop();
     nextCursor = nextItem?.id;
   }
-  items = await Promise.all(
-    items.map(async (comissariat) => {
-      if (comissariat.logo) {
-        comissariat.logo = await ctx.storage.createSignedUrl(
-          comissariat.logo,
-          EXPIRES_IN
-        );
-      }
-      return comissariat;
-    })
-  );
+  items = items.map((item) => {
+    if (item.logo) {
+      item.logo = ctx.storage.getPublicUrl(item.logo);
+    }
+    return item;
+  });
   return {
     items,
     nextCursor,
   };
 };
 
-export const getOne = async (ctx: Context, id: number) => {
+export const getById = async (ctx: Context, id: number) => {
   const comissariat = await ctx.prisma.comissariat.findFirstOrThrow({
     where: { id },
     include: { rayons: true },
   });
   if (comissariat.logo) {
-    comissariat.logo = await ctx.storage.createSignedUrl(
-      comissariat.logo,
-      EXPIRES_IN
-    );
+    comissariat.logo = ctx.storage.getPublicUrl(comissariat.logo);
   }
   return comissariat;
 };
 
-export const create = async (ctx: Context, data: any) => {
+export const create = async (ctx: Context, data: CreateComissariatInput) => {
   const comissariat = await ctx.prisma.comissariat.create({
     data,
   });
   return comissariat;
 };
 
-export const update = async (ctx: Context, id: number, data: any) => {
+export const update = async (ctx: Context, data: UpdateComissariatInput) => {
+  const { id, ...payload } = data;
   const before = await ctx.prisma.comissariat.findFirstOrThrow({
     where: { id },
     select: { logo: true },
   });
   const comissariat = await ctx.prisma.comissariat.update({
     where: { id },
-    data,
+    data: payload,
   });
   if (before.logo && data.logo && before.logo !== data.logo) {
     await ctx.storage.deleteFile(before.logo);

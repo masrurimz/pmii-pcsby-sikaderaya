@@ -1,8 +1,15 @@
+import { paginationQuery } from "../schema/base.schema";
+import {
+  comissariatIndexSchema,
+  comissariatSchema,
+  createComissariatSchema,
+  updateComissariatSchema,
+} from "../schema/comissariat.schema";
 import {
   create,
   destroy,
   getAll,
-  getOne,
+  getById,
   update,
 } from "../services/comissariat.service";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
@@ -11,13 +18,10 @@ import { z } from "zod";
 export const comissariatRouter = router({
   index: publicProcedure
     .meta({ openapi: { method: "GET", path: "/comissariats" } })
-    .input(
-      z.object({ limit: z.number().default(10), cursor: z.number().optional() })
-    )
-    .output(z.any())
+    .input(paginationQuery)
+    .output(comissariatIndexSchema)
     .query(async ({ ctx, input }) => {
-      const { cursor, limit } = input;
-      const { items, nextCursor } = await getAll(ctx, limit, cursor);
+      const { items, nextCursor } = await getAll(ctx, input);
       return {
         items,
         nextCursor,
@@ -27,23 +31,17 @@ export const comissariatRouter = router({
   getById: publicProcedure
     .meta({ openapi: { method: "GET", path: "/comissariats/{id}" } })
     .input(z.object({ id: z.number() }))
-    .output(z.any())
+    .output(comissariatSchema)
     .query(async ({ ctx, input }) => {
       const { id } = input;
-      const item = await getOne(ctx, id);
+      const item = await getById(ctx, id);
       return item;
     }),
 
   create: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/comissariats" } })
-    .input(
-      z.object({
-        name: z.string(),
-        address: z.string(),
-        logo: z.string().optional(),
-      })
-    )
-    .output(z.any())
+    .input(createComissariatSchema)
+    .output(comissariatSchema)
     .query(async ({ ctx, input }) => {
       const item = await create(ctx, input);
       return item;
@@ -51,25 +49,17 @@ export const comissariatRouter = router({
 
   update: protectedProcedure
     .meta({ openapi: { method: "PUT", path: "/comissariats/{id}" } })
-    .input(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-        address: z.string(),
-        logo: z.string().optional(),
-      })
-    )
-    .output(z.any())
+    .input(updateComissariatSchema)
+    .output(comissariatSchema)
     .query(async ({ ctx, input }) => {
-      const { id, ...data } = input;
-      const item = await update(ctx, id, data);
+      const item = await update(ctx, input);
       return item;
     }),
 
   delete: protectedProcedure
     .meta({ openapi: { method: "DELETE", path: "/comissariats/{id}" } })
     .input(z.object({ id: z.number() }))
-    .output(z.any())
+    .output(comissariatSchema)
     .query(async ({ ctx, input }) => {
       const { id } = input;
       const item = await destroy(ctx, id);

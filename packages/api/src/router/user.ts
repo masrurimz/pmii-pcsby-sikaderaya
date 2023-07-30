@@ -1,13 +1,13 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from "zod";
+import { userSchema } from "../schema/auth.schema";
+import { router, protectedProcedure } from "../trpc";
 
 export const userRouter = router({
   current: protectedProcedure
     .meta({ openapi: { method: "GET", path: "/user/current" } })
     .input(z.void())
-    .output(z.any())
+    .output(userSchema)
     .query(async ({ ctx }) => {
-      const { password, ...user } = ctx.user;
-      return user
+      return ctx.user;
     }),
 });
