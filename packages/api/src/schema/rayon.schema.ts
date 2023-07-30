@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const filterRayonSchema = z.object({
+  limit: z.number().default(10),
+  cursor: z.number().optional(),
+  comissariatId: z.number().optional(),
+});
+
 export const rayonSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -27,3 +33,4 @@ export const updateRayonSchema = z.object({
 
 export type CreateRayonInput = z.infer<typeof createRayonSchema>;
 export type UpdateRayonInput = z.infer<typeof updateRayonSchema>;
+export type FilterRayonInput = z.infer<typeof filterRayonSchema>;

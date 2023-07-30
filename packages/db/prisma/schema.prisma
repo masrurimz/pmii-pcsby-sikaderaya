@@ -20,7 +20,7 @@ enum Role {
 }
 
 model User {
-  id                    BigInt          @id @default(autoincrement())
+  id                    Int             @id @default(autoincrement())
   name                  String
   email                 String?         @unique
   password              String?
@@ -104,8 +104,8 @@ enum Gender {
 }
 
 model Member {
-  id             BigInt                @id @default(autoincrement())
-  userId         BigInt                @unique @map("user_id")
+  id             Int                   @id @default(autoincrement())
+  userId         Int                   @unique @map("user_id")
   user           User                  @relation(fields: [userId], references: [id])
   gender         Gender
   phoneNumber    String?               @map("phone_number")
@@ -137,10 +137,10 @@ enum RequestUpdateStatus {
 }
 
 model RequestUpdate {
-  id           BigInt                @id @default(autoincrement())
+  id           Int                   @id @default(autoincrement())
   status       RequestUpdateStatus   @default(PENDING)
-  createdBy    BigInt                @map("created_by")
-  approvedBy   BigInt?               @map("approved_by")
+  createdBy    Int                   @map("created_by")
+  approvedBy   Int?                  @map("approved_by")
   approvedAt   DateTime?             @map("approved_at")
   createdAt    DateTime              @default(now()) @map("created_at")
   updatedAt    DateTime              @updatedAt @map("updated_at")
@@ -152,10 +152,10 @@ model RequestUpdate {
 }
 
 model RequestUpdateMember {
-  id             BigInt        @id @default(autoincrement())
-  requestId      BigInt        @map("request_id")
+  id             Int           @id @default(autoincrement())
+  requestId      Int           @map("request_id")
   request        RequestUpdate @relation(fields: [requestId], references: [id])
-  memberId       BigInt?       @map("member_id")
+  memberId       Int?          @map("member_id")
   member         Member?       @relation(fields: [memberId], references: [id])
   name           String
   email          String?
@@ -196,7 +196,7 @@ enum OrganizerType {
 }
 
 model Training {
-  id            BigInt           @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   name          String
   type          TrainingType
   year          Int
@@ -211,10 +211,10 @@ model Training {
 }
 
 model MemberTraining {
-  id         BigInt   @id @default(autoincrement())
-  memberId   BigInt   @map("member_id")
+  id         Int      @id @default(autoincrement())
+  memberId   Int      @map("member_id")
   member     Member   @relation(fields: [memberId], references: [id])
-  trainingId BigInt   @map("training_id")
+  trainingId Int      @map("training_id")
   training   Training @relation(fields: [trainingId], references: [id])
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
@@ -232,8 +232,8 @@ enum SchoolType {
 }
 
 model MemberSchool {
-  id         BigInt     @id @default(autoincrement())
-  memberId   BigInt     @map("member_id")
+  id         Int        @id @default(autoincrement())
+  memberId   Int        @map("member_id")
   member     Member     @relation(fields: [memberId], references: [id])
   schoolName String     @map("school_name")
   schoolType SchoolType @map("school_type")
@@ -253,8 +253,8 @@ enum SocialMediaType {
 }
 
 model MemberSocialMedia {
-  id        BigInt          @id @default(autoincrement())
-  memberId  BigInt          @map("member_id")
+  id        Int             @id @default(autoincrement())
+  memberId  Int             @map("member_id")
   member    Member          @relation(fields: [memberId], references: [id])
   username  String
   type      SocialMediaType @map("type")

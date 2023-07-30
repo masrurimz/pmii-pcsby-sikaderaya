@@ -5,9 +5,14 @@ import { config } from "../config/config";
 import { TRPCError } from "@trpc/server";
 
 export const signIn = async (ctx: Context, email: string, password: string) => {
-  const user = await ctx.prisma.user.findFirstOrThrow({
+  const user = await ctx.prisma.user.findFirst({
     where: { email: email },
   });
+  if (!user)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
   if (!user.password)
     throw new TRPCError({
       code: "BAD_REQUEST",
@@ -23,12 +28,18 @@ export const signIn = async (ctx: Context, email: string, password: string) => {
 
 export const refreshToken = async (ctx: Context, token: string) => {
   const jwt = verifyJwt<{ sub: number }>(token, "refresh");
-  if (!jwt) {
+  if (!jwt)
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid token" });
-  }
-  const user = await ctx.prisma.user.findFirstOrThrow({
+
+  const user = await ctx.prisma.user.findFirst({
     where: { id: jwt.sub },
   });
+  if (!user)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+
   return generateToken(user.id);
 };
 

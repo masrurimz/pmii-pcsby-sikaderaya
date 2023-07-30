@@ -30,13 +30,9 @@ export class SupabaseStorage implements StorageInterface {
   }
 
   async deleteFile(filename: string): Promise<void> {
-    const { error } = await this.supabaseClient.storage
+    await this.supabaseClient.storage
       .from(this.bucket)
       .remove([filename]);
-
-    if (error) {
-      throw error;
-    }
   }
 
   getPublicUrl(filename: string): string {

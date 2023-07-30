@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { Context } from "../context";
 import { PaginationQueryInput } from "../schema/base.schema";
 import {
@@ -17,12 +18,14 @@ export const getAll = async (ctx: Context, filter: PaginationQueryInput) => {
     const nextItem = items.pop();
     nextCursor = nextItem?.id;
   }
+
   items = items.map((item) => {
     if (item.logo) {
       item.logo = ctx.storage.getPublicUrl(item.logo);
     }
     return item;
   });
+
   return {
     items,
     nextCursor,
@@ -30,14 +33,19 @@ export const getAll = async (ctx: Context, filter: PaginationQueryInput) => {
 };
 
 export const getById = async (ctx: Context, id: number) => {
-  const comissariat = await ctx.prisma.comissariat.findFirstOrThrow({
+  const item = await ctx.prisma.comissariat.findFirst({
     where: { id },
     include: { rayons: true },
   });
-  if (comissariat.logo) {
-    comissariat.logo = ctx.storage.getPublicUrl(comissariat.logo);
-  }
-  return comissariat;
+  if (!item)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Comissariat not found",
+    });
+
+  if (item.logo) item.logo = ctx.storage.getPublicUrl(item.logo);
+
+  return item;
 };
 
 export const create = async (ctx: Context, data: CreateComissariatInput) => {
@@ -49,26 +57,38 @@ export const create = async (ctx: Context, data: CreateComissariatInput) => {
 
 export const update = async (ctx: Context, data: UpdateComissariatInput) => {
   const { id, ...payload } = data;
-  const before = await ctx.prisma.comissariat.findFirstOrThrow({
+  const before = await ctx.prisma.comissariat.findFirst({
     where: { id },
     select: { logo: true },
   });
-  const comissariat = await ctx.prisma.comissariat.update({
+  if (!before)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Comissariat not found",
+    });
+
+  const item = await ctx.prisma.comissariat.update({
     where: { id },
     data: payload,
   });
-  if (before.logo && data.logo && before.logo !== data.logo) {
+  if (before.logo && data.logo && before.logo !== data.logo)
     await ctx.storage.deleteFile(before.logo);
-  }
-  return comissariat;
+
+  return item;
 };
 
 export const destroy = async (ctx: Context, id: number) => {
-  const comissariat = await ctx.prisma.comissariat.delete({
+  const item = await ctx.prisma.comissariat.findFirst({
     where: { id },
   });
-  if (comissariat.logo) {
-    await ctx.storage.deleteFile(comissariat.logo);
-  }
-  return comissariat;
+  if (!item)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Comissariat not found",
+    });
+
+  await ctx.prisma.comissariat.delete({ where: { id } });
+  if (item.logo) await ctx.storage.deleteFile(item.logo);
+
+  return item;
 };

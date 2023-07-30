@@ -1,6 +1,6 @@
-import { paginationQuery } from "../schema/base.schema";
 import {
   createRayonSchema,
+  filterRayonSchema,
   rayonIndexSchema,
   rayonSchema,
   updateRayonSchema,
@@ -13,7 +13,7 @@ import { z } from "zod";
 export const rayonRouter = router({
   index: publicProcedure
     .meta({ openapi: { method: "GET", path: "/rayons" } })
-    .input(paginationQuery)
+    .input(filterRayonSchema)
     .output(rayonIndexSchema)
     .query(async ({ ctx, input }) => {
       const result = await getAll(ctx, input);
