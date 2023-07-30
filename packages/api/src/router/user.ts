@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { userSchema } from "../schema/auth.schema";
 import { router, protectedProcedure } from "../trpc";
+import { updatePasswordSchema, userSchema } from "../schema/user.schema";
+import { updatePassword } from "../services/user.service";
 
 export const userRouter = router({
   current: protectedProcedure
@@ -9,5 +10,18 @@ export const userRouter = router({
     .output(userSchema)
     .query(async ({ ctx }) => {
       return ctx.user;
+    }),
+
+  updatePassword: protectedProcedure
+    .meta({ openapi: { method: "POST", path: "/user/update-password" } })
+    .input(updatePasswordSchema)
+    .output(userSchema)
+    .query(async ({ ctx, input }) => {
+      const result = await updatePassword(
+        ctx,
+        input.oldPassword,
+        input.newPassword
+      );
+      return result;
     }),
 });
