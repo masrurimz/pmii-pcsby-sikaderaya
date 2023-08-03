@@ -1,12 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { Context } from "../context";
-import { PaginationQueryInput } from "../schema/base.schema";
 import {
   CreateComissariatInput,
+  FilterComissariatInput,
   UpdateComissariatInput,
 } from "../schema/comissariat.schema";
 
-export const getAll = async (ctx: Context, filter: PaginationQueryInput) => {
+export const getAll = async (ctx: Context, filter: FilterComissariatInput) => {
   const { limit, cursor } = filter;
   let items = await ctx.prisma.comissariat.findMany({
     take: limit + 1,

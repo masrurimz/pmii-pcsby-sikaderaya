@@ -39,9 +39,14 @@ export const getAll = async (ctx: Context, filter: FilterRayonInput) => {
 };
 
 export const getById = async (ctx: Context, id: number) => {
-  const item = await ctx.prisma.rayon.findFirstOrThrow({
+  const item = await ctx.prisma.rayon.findFirst({
     where: { id },
   });
+  if (!item)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Rayon not found",
+    });
   if (item.logo) {
     item.logo = ctx.storage.getPublicUrl(item.logo);
   }

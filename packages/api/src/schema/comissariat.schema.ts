@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { rayonSchema } from "./rayon.schema";
 
+export const filterComissariatSchema = z.object({
+  limit: z.number().default(10),
+  cursor: z.number().optional(),
+});
+
 export const comissariatSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -29,5 +34,6 @@ export const updateComissariatSchema = z.object({
   logo: z.string().nullish(),
 });
 
+export type FilterComissariatInput = z.infer<typeof filterComissariatSchema>;
 export type CreateComissariatInput = z.infer<typeof createComissariatSchema>;
 export type UpdateComissariatInput = z.infer<typeof updateComissariatSchema>;
