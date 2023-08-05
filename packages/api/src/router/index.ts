@@ -1,15 +1,22 @@
 import { router } from "../trpc";
-import { entryRouter } from "./entry";
 import { authRouter } from "./auth";
+import { comissariatRouter } from "./comissariat";
+import { facultyRouter } from "./faculty";
+import { majorRouter } from "./major";
+import { rayonRouter } from "./rayon";
+import { storageRouter } from "./storage";
+import { universityRouter } from "./university";
 import { userRouter } from "./user";
-import { testRouter } from "./test";
 
 export const appRouter = router({
-	entry: entryRouter,
-	user: userRouter,
-	auth: authRouter,
-	test: testRouter,
+  user: userRouter,
+  auth: authRouter,
+  comissariat: comissariatRouter,
+  rayon: rayonRouter,
+  storage: storageRouter,
+  university: universityRouter,
+  faculty: facultyRouter,
+  major: majorRouter,
 });
 
-// export type definition of API
 export type AppRouter = typeof appRouter;

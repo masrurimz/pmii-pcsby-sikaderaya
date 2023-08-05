@@ -9,14 +9,18 @@
     "@my/db": "*",
     "@supabase/auth-helpers-nextjs": "^0.5.4",
     "@supabase/auth-helpers-react": "^0.3.1",
-    "@supabase/supabase-js": "^2.8.0",
+    "@supabase/supabase-js": "^2.31.0",
     "@trpc/client": "10.9.0",
     "@trpc/server": "10.9.0",
+    "argon2": "^0.30.3",
+    "jsonwebtoken": "^9.0.1",
+    "mime": "^3.0.0",
     "superjson": "^1.9.1",
     "trpc-openapi": "^1.2.0",
-    "zod": "^3.18.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
     "eslint": "^8.28.0",
     "typescript": "4.9.4"
   }
