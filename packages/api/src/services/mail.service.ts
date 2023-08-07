@@ -1,7 +1,13 @@
-import { Resend } from "resend";
 import { config } from "../config/config";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(config.resendApiKey);
+const client = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: config.mail.user,
+        pass: config.mail.password,
+    },
+})
 
 export const sendResetPasswordMail = async (email: string, token: string) => {
   const resetPasswordUrl = `${config.appUrl}${config.resetPasswordPath}?token=${token}`;
@@ -16,11 +22,11 @@ export const sendResetPasswordMail = async (email: string, token: string) => {
     </div>
     `;
   try {
-    const data = await resend.emails.send({
-      from: config.mailFromAddress,
-      to: email,
-      subject: "Reset Password",
-      html,
+    const data = await client.sendMail({
+        from: config.mail.fromAddress,
+        to: email,
+        subject: "Reset Password",
+        html,
     });
     return data;
   } catch (error) {
@@ -40,8 +46,8 @@ export const sendInvitationMail = async (email: string, token: string) => {
         <p>${config.appName}</p>
     </div>
     `;
-  const data = await resend.emails.send({
-    from: config.mailFromAddress,
+  const data = await client.sendMail({
+    from: config.mail.fromAddress,
     to: email,
     subject: "Invitation",
     html,

@@ -4,11 +4,16 @@ require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 interface Config {
   appUrl: string;
   appName: string;
-  resendApiKey: string;
   resetPasswordPath: string;
-  mailFromAddress: string;
+  mail: Mail;
   jwt: JWT;
   supabase: Supabase;
+}
+
+interface Mail {
+  fromAddress: string;
+  user: string;
+  password: string;
 }
 
 interface JWT {
@@ -27,9 +32,12 @@ interface Supabase {
 export const config: Config = {
   appUrl: process.env.APP_URL as string,
   appName: process.env.APP_NAME as string,
-  resendApiKey: process.env.RESEND_API_KEY as string,
   resetPasswordPath: process.env.RESET_PASSWORD_PATH as string,
-  mailFromAddress: process.env.MAIL_FROM_ADDRESS as string,
+  mail: {
+    fromAddress: process.env.MAIL_FROM_ADDRESS as string,
+    user: process.env.MAIL_USER as string,
+    password: process.env.MAIL_PASSWORD as string,
+  },
   jwt: {
     accessExpiresIn: parseInt(process.env.JWT_ACCESS_EXPIRES_IN as string),
     refreshExpiresIn: parseInt(process.env.JWT_REFRESH_EXPIRES_IN as string),
