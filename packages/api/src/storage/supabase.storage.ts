@@ -8,7 +8,7 @@ export class SupabaseStorage implements StorageInterface {
   supabaseClient: SupabaseClient;
 
   constructor() {
-    const supabaseConfig = config.Supabase;
+    const supabaseConfig = config.supabase;
     this.bucket = supabaseConfig.bucket;
     this.supabaseClient = createClient(supabaseConfig.url, supabaseConfig.key);
   }

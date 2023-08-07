@@ -1,7 +1,20 @@
 import { z } from "zod";
-import { adminIndexSchema, adminSchema, createAdminSchema, filterAdminSchema, updateAdminSchema } from "../schema/admin.schema";
-import { create, destroy, getAll, getById, update } from "../services/admin.service";
+import {
+  adminIndexSchema,
+  adminSchema,
+  createAdminSchema,
+  filterAdminSchema,
+  updateAdminSchema,
+} from "../schema/admin.schema";
+import {
+  create,
+  destroy,
+  getAll,
+  getById,
+  update,
+} from "../services/admin.service";
 import { protectedProcedure, router } from "../trpc";
+import { inviteUser } from "../services/user.service";
 
 export const adminRouter = router({
   index: protectedProcedure
@@ -51,6 +64,16 @@ export const adminRouter = router({
     .query(async ({ ctx, input }) => {
       const { id } = input;
       const item = await destroy(ctx, id);
+      return item;
+    }),
+
+  invite: protectedProcedure
+    .meta({ openapi: { method: "POST", path: "/admins/{id}/invite" } })
+    .input(z.object({ id: z.number() }))
+    .output(z.boolean())
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const item = await inviteUser(ctx, id);
       return item;
     }),
 });

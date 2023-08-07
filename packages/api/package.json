@@ -13,8 +13,11 @@
     "@trpc/client": "10.9.0",
     "@trpc/server": "10.9.0",
     "argon2": "^0.30.3",
+    "crypto": "^1.0.1",
     "jsonwebtoken": "^9.0.1",
     "mime": "^3.0.0",
+    "moment": "^2.29.4",
+    "resend": "^0.17.2",
     "superjson": "^1.9.1",
     "trpc-openapi": "^1.2.0",
     "zod": "^3.21.4"

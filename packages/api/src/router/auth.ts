@@ -1,10 +1,18 @@
 import { publicProcedure, router } from "../trpc";
-import { refreshToken, signIn } from "../services/auth.service";
 import {
+  forgotPassword,
+  refreshToken,
+  resetPassword,
+  signIn,
+} from "../services/auth.service";
+import {
+  forgotPasswordSchema,
   refreshTokenSchema,
+  resetPasswordSchema,
   signInSchema,
   tokenSchema,
 } from "../schema/auth.schema";
+import { z } from "zod";
 
 export const authRouter = router({
   signIn: publicProcedure
@@ -23,5 +31,21 @@ export const authRouter = router({
     .output(tokenSchema)
     .query(({ ctx, input }) => {
       return refreshToken(ctx, input.refreshToken);
+    }),
+
+  forgotPassword: publicProcedure
+    .meta({ openapi: { method: "POST", path: "/auth/forgot-password" } })
+    .input(forgotPasswordSchema)
+    .output(z.boolean())
+    .query(({ ctx, input }) => {
+      return forgotPassword(ctx, input.email);
+    }),
+
+  resetPassword: publicProcedure
+    .meta({ openapi: { method: "POST", path: "/auth/reset-password" } })
+    .input(resetPasswordSchema)
+    .output(z.boolean())
+    .query(({ ctx, input }) => {
+      return resetPassword(ctx, input.token, input.password);
     }),
 });

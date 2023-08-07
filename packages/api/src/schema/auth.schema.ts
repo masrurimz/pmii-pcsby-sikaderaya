@@ -13,3 +13,12 @@ export const tokenSchema = z.object({
   accessToken: z.string(),
   refreshToken: z.string(),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string(),
+  password: z.string(),
+});

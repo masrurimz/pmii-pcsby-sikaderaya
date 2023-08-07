@@ -36,6 +36,7 @@ export const createAdminSchema = z
       "ADMIN_RAYON",
     ]),
     roleDetail: z.number().optional(),
+    invite: z.boolean().default(false),
   })
   .refine((schema) => {
     const roleNeedDetail = ["ADMIN_COMISSARIAT", "ADMIN_RAYON"];

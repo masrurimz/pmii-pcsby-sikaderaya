@@ -8,6 +8,7 @@ import {
 } from "../schema/admin.schema";
 import { TRPCError } from "@trpc/server";
 import argon2 from "argon2";
+import { inviteUser } from "./user.service";
 
 const baseQuery = Prisma.sql`
   SELECT
@@ -106,7 +107,7 @@ export const create = async (ctx: Context, data: CreateAdminInput) => {
     if (!hasRoleMember)
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "User already has role",
+        message: "User already exists",
       });
 
     userId = user.id;
@@ -119,6 +120,9 @@ export const create = async (ctx: Context, data: CreateAdminInput) => {
       data: payload,
     });
     userId = admin.id;
+  }
+  if (data.invite) {
+    inviteUser(ctx, userId);
   }
   return getById(ctx, userId);
 };
