@@ -1,4 +1,5 @@
 import { router } from "../trpc";
+import { adminRouter } from "./admin";
 import { authRouter } from "./auth";
 import { comissariatRouter } from "./comissariat";
 import { facultyRouter } from "./faculty";
@@ -17,6 +18,7 @@ export const appRouter = router({
   university: universityRouter,
   faculty: facultyRouter,
   major: majorRouter,
+  admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;

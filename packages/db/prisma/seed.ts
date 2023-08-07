@@ -12,7 +12,11 @@ async function main() {
       name: "Admin",
       email: "admin@admin.com",
       password: hashedPassword,
-      role: Role.SUPERADMIN,
+      roles: {
+        create: {
+          role: Role.SUPERADMIN,
+        },
+      },
     },
   });
   console.log({ superadmin });

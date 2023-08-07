@@ -24,15 +24,24 @@ model User {
   name                  String
   email                 String?         @unique
   password              String?
-  role                  Role
-  roleDetail            Int?            @map("role_detail")
   createdAt             DateTime        @default(now()) @map("created_at")
   updatedAt             DateTime        @updatedAt @map("updated_at")
+  roles                 UserRole[]
   Member                Member?
   createRequestUpdates  RequestUpdate[] @relation("create_request_updates")
   approveRequestUpdates RequestUpdate[] @relation("approve_request_updates")
 
   @@map("users")
+}
+
+model UserRole {
+  userId     Int  @map("user_id")
+  user       User @relation(fields: [userId], references: [id])
+  role       Role
+  roleDetail Int? @map("role_detail")
+
+  @@unique([userId, role], name: "user_role_unique")
+  @@map("user_roles")
 }
 
 model Comissariat {
