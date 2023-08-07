@@ -7,12 +7,14 @@ export const updatePassword = async (
   oldPassword: string,
   newPassword: string
 ) => {
-  const user = ctx.user;
+  const user = await ctx.prisma.user.findFirst({
+    where: { id: ctx.user?.id },
+  });
   if (!user)
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
 
   const isOldPasswordValid = await argon2.verify(
-    user?.password ?? "",
+    user.password ?? "",
     oldPassword
   );
   if (!isOldPasswordValid)
@@ -22,12 +24,12 @@ export const updatePassword = async (
     });
 
   const hashedPassword = await argon2.hash(newPassword);
-  const result = await ctx.prisma.user.update({
+  await ctx.prisma.user.update({
     where: { id: user.id },
     data: {
       password: hashedPassword,
     },
   });
 
-  return result;
+  return true;
 };

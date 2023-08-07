@@ -15,7 +15,7 @@ export const userRouter = router({
   updatePassword: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/user/update-password" } })
     .input(updatePasswordSchema)
-    .output(userSchema)
+    .output(z.boolean())
     .query(async ({ ctx, input }) => {
       const result = await updatePassword(
         ctx,

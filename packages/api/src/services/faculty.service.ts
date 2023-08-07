@@ -1,5 +1,9 @@
 import { Context } from "../context";
-import { CreateFacultyInput, FilterFacultyInput, UpdateFacultyInput } from "../schema/faculty.schema";
+import {
+  CreateFacultyInput,
+  FilterFacultyInput,
+  UpdateFacultyInput,
+} from "../schema/faculty.schema";
 import { TRPCError } from "@trpc/server";
 
 export const getAll = async (ctx: Context, filter: FilterFacultyInput) => {
@@ -37,7 +41,7 @@ export const getById = async (ctx: Context, id: number) => {
     });
 
   return item;
-}
+};
 
 export const create = async (ctx: Context, data: CreateFacultyInput) => {
   const faculty = await ctx.prisma.faculty.create({
@@ -59,7 +63,7 @@ export const update = async (ctx: Context, data: UpdateFacultyInput) => {
     data: payload,
   });
   return faculty;
-}
+};
 
 export const destroy = async (ctx: Context, id: number) => {
   const before = await ctx.prisma.faculty.findFirst({

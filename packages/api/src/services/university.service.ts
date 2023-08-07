@@ -1,5 +1,9 @@
 import { Context } from "../context";
-import { CreateUniversityInput, FilterUniversityInput, UpdateUniversityInput } from "../schema/university.schema";
+import {
+  CreateUniversityInput,
+  FilterUniversityInput,
+  UpdateUniversityInput,
+} from "../schema/university.schema";
 import { TRPCError } from "@trpc/server";
 
 export const getAll = async (ctx: Context, filter: FilterUniversityInput) => {
@@ -40,7 +44,7 @@ export const create = async (ctx: Context, data: CreateUniversityInput) => {
     data,
   });
   return university;
-}
+};
 
 export const update = async (ctx: Context, data: UpdateUniversityInput) => {
   const { id, ...payload } = data;
@@ -58,7 +62,7 @@ export const update = async (ctx: Context, data: UpdateUniversityInput) => {
     ctx.storage.deleteFile(before.logo);
   }
   return university;
-}
+};
 
 export const destroy = async (ctx: Context, id: number) => {
   const before = await ctx.prisma.university.findFirst({
@@ -71,4 +75,4 @@ export const destroy = async (ctx: Context, id: number) => {
     where: { id },
   });
   return item;
-}
+};
