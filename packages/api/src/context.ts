@@ -1,4 +1,4 @@
-import { prisma, User } from "@my/db";
+import { prisma } from "@my/db";
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
@@ -27,9 +27,10 @@ export const createContextInner = async (
   };
 };
 
-import { verifyJwt } from "./utils/jwt";
-import { SupabaseStorage } from "./storage/supabase.storage";
+import { createSupabaseStorage } from "./storage/supabase.storage";
 import { StorageInterface } from "./storage/storage.interface";
+import { User } from "./schema/user.schema";
+import { getUserFromToken } from "./utils/auth";
 
 /**
  * This is the actual context you'll use in your router
@@ -42,17 +43,12 @@ export const createContext = async (opts: CreateNextContextOptions) => {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) return null;
 
-    const jwt = verifyJwt<{ sub: number }>(token, "access");
-    if (!jwt) return null;
-
-    const user = await prisma.user.findFirst({
-      where: { id: jwt.sub },
-    });
+    const user = getUserFromToken(token);
     return user;
   }
 
   const user = await getUserFromHeader();
-  const storage = new SupabaseStorage();
+  const storage = createSupabaseStorage();
 
   return await createContextInner({ user }, storage);
 };

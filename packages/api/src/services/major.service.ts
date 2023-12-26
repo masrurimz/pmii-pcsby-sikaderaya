@@ -1,5 +1,9 @@
 import { Context } from "../context";
-import { CreateMajorInput, FilterMajorInput, UpdateMajorInput } from "../schema/major.schema";
+import {
+  CreateMajorInput,
+  FilterMajorInput,
+  UpdateMajorInput,
+} from "../schema/major.schema";
 import { TRPCError } from "@trpc/server";
 
 export const getAll = async (ctx: Context, filter: FilterMajorInput) => {
@@ -36,14 +40,14 @@ export const getById = async (ctx: Context, id: number) => {
     });
 
   return item;
-}
+};
 
 export const create = async (ctx: Context, data: CreateMajorInput) => {
   const major = await ctx.prisma.major.create({
     data,
   });
   return major;
-}
+};
 
 export const update = async (ctx: Context, data: UpdateMajorInput) => {
   const { id, ...payload } = data;
@@ -58,7 +62,7 @@ export const update = async (ctx: Context, data: UpdateMajorInput) => {
     data: payload,
   });
   return major;
-}
+};
 
 export const destroy = async (ctx: Context, id: number) => {
   const before = await ctx.prisma.major.findFirst({
@@ -71,4 +75,4 @@ export const destroy = async (ctx: Context, id: number) => {
     where: { id },
   });
   return major;
-}
+};

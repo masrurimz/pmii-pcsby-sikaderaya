@@ -8,9 +8,9 @@ export const signJwt = (
 ) => {
   let privateKey: jwt.Secret;
   if (type === "access") {
-    privateKey = config.JWT.accessSecret;
+    privateKey = config.jwt.accessSecret;
   } else {
-    privateKey = config.JWT.refreshSecret;
+    privateKey = config.jwt.refreshSecret;
   }
   return jwt.sign(payload, privateKey, {
     ...(options && options),
@@ -25,9 +25,9 @@ export const verifyJwt = <T>(
   try {
     let privateKey: jwt.Secret;
     if (type === "access") {
-      privateKey = config.JWT.accessSecret;
+      privateKey = config.jwt.accessSecret;
     } else {
-      privateKey = config.JWT.refreshSecret;
+      privateKey = config.jwt.refreshSecret;
     }
     return jwt.verify(token, privateKey) as T;
   } catch (error) {
