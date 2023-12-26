@@ -1,10 +1,10 @@
-import { Context } from "../context";
+import { TRPCError } from "@trpc/server";
 import argon2 from "argon2";
 import crypto from "crypto";
-import { signJwt, verifyJwt } from "../utils/jwt";
+import dayjs from "dayjs";
 import { config } from "../config/config";
-import { TRPCError } from "@trpc/server";
-import moment from "moment";
+import { Context } from "../context";
+import { signJwt, verifyJwt } from "../utils/jwt";
 import { sendResetPasswordMail } from "./mail.service";
 
 export const signIn = async (ctx: Context, email: string, password: string) => {
@@ -71,7 +71,7 @@ export const forgotPassword = async (ctx: Context, email: string) => {
     });
 
   const token = crypto.randomBytes(32).toString("hex");
-  const expiredAt = moment().add(10, "minutes").toDate();
+  const expiredAt = dayjs().add(10, "minute").toDate();
   await ctx.prisma.passwordResetToken.upsert({
     where: { email: email },
     create: {
@@ -102,7 +102,7 @@ export const resetPassword = async (
       message: "Token not found",
     });
 
-  if (moment().isAfter(moment(passwordResetToken.expiredAt)))
+  if (dayjs().isAfter(dayjs(passwordResetToken.expiredAt)))
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Token expired",

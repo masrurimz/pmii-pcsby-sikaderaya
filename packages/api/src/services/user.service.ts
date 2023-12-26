@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { Context } from "../context";
 import argon2 from "argon2";
 import crypto from "crypto";
-import moment from "moment";
+import dayjs from "dayjs";
 import { sendInvitationMail } from "./mail.service";
 
 export const updatePassword = async (
@@ -46,7 +46,7 @@ export const inviteUser = async (ctx: Context, id: number) => {
   if (!email) return false;
 
   const token = crypto.randomBytes(32).toString("hex");
-  const expiredAt = moment().add(10, "minutes").toDate();
+  const expiredAt = dayjs().add(10, "minute").toDate();
   await ctx.prisma.passwordResetToken.upsert({
     where: { email },
     create: {
